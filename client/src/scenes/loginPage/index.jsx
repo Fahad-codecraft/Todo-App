@@ -13,7 +13,7 @@ const LoginPage = () => {
           textAlign="center"
 
         >
-          <Typography fontWeight="bold" fontSize="32px" color="#e52b64">
+          <Typography  fontSize="50px" color="#e52b64">
             Tsks
           </Typography>
         </Box>
