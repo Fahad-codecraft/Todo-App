@@ -125,7 +125,7 @@ const TodosWidget = ({ searchQuery, handleSearch }) => {
         >
           Uncompleted: {filteredTodos.filter((todo) => !todo.complete).length}
         </Button>
-        <TextField
+        {/* <TextField
           // label="Search Tasks"
           type="text"
           placeholder="Search Tasks"
@@ -149,7 +149,7 @@ const TodosWidget = ({ searchQuery, handleSearch }) => {
               color:"white"
             },
           }}
-        />
+        /> */}
       </Box>
       {getFilteredTodos().map(({ _id, text, complete }) => (
         <div
