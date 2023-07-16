@@ -14,9 +14,9 @@ const HomePage = () => {
     };
   return (
     <Box>
-      <Navbar handleSearch={handleSearch}/>
+      <Navbar />
       <AddTaskWidget/>
-      <TodosWidget searchQuery={searchQuery}/>
+      <TodosWidget searchQuery={searchQuery} handleSearch={handleSearch}/>
     </Box>
 
 
