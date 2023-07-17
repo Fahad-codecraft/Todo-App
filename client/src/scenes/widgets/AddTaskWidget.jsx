@@ -23,7 +23,7 @@ const AddTaskWidget = () => {
 			userId: _id,
 			text: text
 		};
-		const response = await fetch("http://localhost:5001/create/todo", {
+		const response = await fetch("https://todo-app-backend-rho.vercel.app/create/todo", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

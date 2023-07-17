@@ -52,7 +52,7 @@ const Form = () => {
   const isRegister = pageType === "register";
 
   const register = async (values, onSubmitProps) => {
-    const savedUserResponse = await fetch("http://localhost:5001/auth/register", {
+    const savedUserResponse = await fetch("https://todo-app-backend-rho.vercel.app/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
@@ -66,7 +66,7 @@ const Form = () => {
   };
 
   const login = async (values, onSubmitProps) => {
-    const loggedInResponse = await fetch("http://localhost:5001/auth/login", {
+    const loggedInResponse = await fetch("https://todo-app-backend-rho.vercel.app/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),

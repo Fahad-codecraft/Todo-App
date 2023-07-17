@@ -18,7 +18,7 @@ const TodosWidget = ({ searchQuery, handleSearch }) => {
   const [filter, setFilter] = useState("all");
 
   const getTodos = async () => {
-    const response = await fetch("http://localhost:5001/todos", {
+    const response = await fetch("https://todo-app-backend-rho.vercel.app/todos", {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -31,7 +31,7 @@ const TodosWidget = ({ searchQuery, handleSearch }) => {
   }, [refresh]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const deleteTodo = async (_id) => {
-    await fetch(`http://localhost:5001/delete/todo/${_id}`, {
+    await fetch(`https://todo-app-backend-rho.vercel.app/delete/todo/${_id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -39,7 +39,7 @@ const TodosWidget = ({ searchQuery, handleSearch }) => {
   };
 
   const completeTodo = async (_id) => {
-    const response = await fetch(`http://localhost:5001/todo/${_id}/complete`, {
+    const response = await fetch(`https://todo-app-backend-rho.vercel.app/todo/${_id}/complete`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -56,7 +56,7 @@ const TodosWidget = ({ searchQuery, handleSearch }) => {
   };
 
   const updateTodo = async (_id, newText) => {
-    await fetch(`http://localhost:5001/todo/${_id}/edit`, {
+    await fetch(`https://todo-app-backend-rho.vercel.app/todo/${_id}/edit`, {
       method: "PUT",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify({ text: newText }),
