@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import TodoWidget from "./ShowTodoWidget";
 import FlexBetween from "../../components/FlexBetween";
 import TodosWrapper from "../../components/TodosWrapper";
-import { Box, TextField, Button } from "@mui/material";
+import { Box, TextField, Button, Snackbar, Alert } from "@mui/material";
 import { DeleteOutlineOutlined, CheckBoxOutlineBlank, CheckBox, EditOutlined } from '@mui/icons-material';
 import { TodoContext } from "../../context/TodoContext";
 import { useContext } from "react";
@@ -16,6 +16,9 @@ const TodosWidget = ({ searchQuery, handleSearch }) => {
   const [editingTodoId, setEditingTodoId] = useState(null);
   const [editedText, setEditedText] = useState('');
   const [filter, setFilter] = useState("all");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("")
 
   const getTodos = async () => {
     const response = await fetch("https://todo-app-backend-rho.vercel.app/todos", {
@@ -30,37 +33,43 @@ const TodosWidget = ({ searchQuery, handleSearch }) => {
     getTodos();
   }, [refresh]); // eslint-disable-line react-hooks/exhaustive-deps
 
+
   const deleteTodo = async (_id) => {
+    setSnackbarSeverity("info");
+    setSnackbarMessage("Deleting...");
+    setSnackbarOpen(true);
+
+    setTodos(todos.filter((todo) => todo._id !== _id));
+
     await fetch(`https://todo-app-backend-rho.vercel.app/delete/todo/${_id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
-    setTodos(todos.filter((todo) => todo._id !== _id));
+    setSnackbarSeverity("error");
+    showSnackbar("Todo deleted successfully");
   };
 
-  const completeTodo = async (_id) => {
-    const response = await fetch(`https://todo-app-backend-rho.vercel.app/todo/${_id}/complete`, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await response.json();
+ const completeTodo = async (_id) => {
+  const completedTodos = todos.map((todo) => {
+    if (todo._id === _id) {
+      return { ...todo, complete: !todo.complete };
+    }
+    return todo;
+  });
 
-    setTodos((todos) =>
-      todos.map((todo) => {
-        if (todo._id === data._id) {
-          return { ...todo, complete: !todo.complete };
-        }
-        return todo;
-      })
-    );
-  };
+  setTodos(completedTodos);
+
+  await fetch(`https://todo-app-backend-rho.vercel.app/todo/${_id}/complete`, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
 
   const updateTodo = async (_id, newText) => {
-    await fetch(`https://todo-app-backend-rho.vercel.app/todo/${_id}/edit`, {
-      method: "PUT",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ text: newText }),
-    });
+    setSnackbarSeverity("info");
+    setSnackbarMessage("Editing...");
+    setSnackbarOpen(true);
 
     setTodos((todos) =>
       todos.map((todo) => {
@@ -70,6 +79,14 @@ const TodosWidget = ({ searchQuery, handleSearch }) => {
         return todo;
       })
     );
+
+    await fetch(`https://todo-app-backend-rho.vercel.app/todo/${_id}/edit`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ text: newText }),
+    });
+    setSnackbarSeverity("success");
+    showSnackbar("Todo updated successfully");
   };
 
   const startEditing = (_id, text) => {
@@ -97,6 +114,15 @@ const TodosWidget = ({ searchQuery, handleSearch }) => {
       default:
         return filteredTodos;
     }
+  };
+
+  const showSnackbar = (message) => {
+    setSnackbarMessage(message);
+    setSnackbarOpen(true);
+  };
+
+  const closeSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -247,6 +273,17 @@ const TodosWidget = ({ searchQuery, handleSearch }) => {
           </TodosWrapper>
         </div>
       ))}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={closeSnackbar}
+        message={snackbarMessage}
+        sx={{ width: '100%' }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        
+      >
+        <Alert severity={snackbarSeverity} variant="filled">{snackbarMessage}</Alert>
+      </Snackbar>
     </>
   );
 };

@@ -13,9 +13,6 @@ import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setLogin } from "../../state/index.js";
-import "./Form.css";
-
-// Import the necessary components from Framer Motion
 import { motion } from "framer-motion";
 
 const registerSchema = yup.object().shape({
@@ -45,6 +42,9 @@ const initialValuesLogin = {
 const Form = () => {
   const [pageType, setPageType] = useState("login");
   const [showSnackbar, setShowSnackbar] = useState(false); // State for controlling the visibility of the snackbar
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("")
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -66,23 +66,36 @@ const Form = () => {
   };
 
   const login = async (values, onSubmitProps) => {
+    setSnackbarSeverity("info");
+    setSnackbarMessage("Checking Credentials...");
+    setShowSnackbar(true);
     const loggedInResponse = await fetch("https://todo-app-backend-rho.vercel.app/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     });
     if (loggedInResponse.status !== 200) {
-			setShowSnackbar(true); // Show the snackbar with the error message
+      setSnackbarSeverity("error");
+      setSnackbarMessage("Invalid email or password")
+			setShowSnackbar(true);
 		} else {
+      setSnackbarSeverity("success");
+      setSnackbarMessage("Confirmed Credentials..")
+      setShowSnackbar(true);
 			const loggedIn = await loggedInResponse.json();
-			onSubmitProps.resetForm();
+      setTimeout(() => {
+        onSubmitProps.resetForm();
+      }, 1000)
+			
 			dispatch(
 				setLogin({
 					user: loggedIn.user,
 					token: loggedIn.token,
 				})
 			);
-			navigate("/home");
+			setTimeout(() => {
+        navigate("/home");
+      }, 1000);
 		}
   };
 
@@ -255,6 +268,10 @@ const Form = () => {
                 p: "1rem",
                 borderRadius: "15px",
                 color: "white",
+                backgroundColor: "purple",
+                "&:hover": {
+                  backgroundColor: "#380038"
+                }
               }}
             >
               {isLogin ? "LOGIN" : "REGISTER"}
@@ -291,7 +308,7 @@ const Form = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-						<Alert severity="error">Invalid email or password </Alert>
+						<Alert severity={snackbarSeverity} variant="filled">{snackbarMessage}</Alert>
 					</Snackbar>
         </form>
       )}
